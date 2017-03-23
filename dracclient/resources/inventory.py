@@ -53,6 +53,10 @@ Memory = collections.namedtuple(
     'Memory',
     ['id', 'size_mb', 'speed_mhz', 'manufacturer', 'model', 'status'])
 
+System_Inventory = collections.namedtuple(
+    'System_Inventory',
+    ['model', 'power_cap', 'power_cap_enabled_state', 'service_tag'])
+
 NIC = collections.namedtuple(
     'NIC',
     ['id', 'mac', 'model', 'speed_mbps', 'duplex', 'media_type'])
@@ -169,4 +173,32 @@ class InventoryManagement(object):
 
     def _get_nic_attr(self, drac_nic, attr_name):
         return utils.get_wsman_resource_attr(drac_nic, uris.DCIM_NICView,
+                                             attr_name)
+
+    def list_system_inventory(self):
+        """Returns the system inventory
+
+        :returns: a list of Memory objects
+        :raises: WSManRequestFailure on request failures
+        :raises: WSManInvalidResponse when receiving invalid response
+        :raises: DRACOperationFailed on error reported back by the DRAC
+        """
+
+        doc = self.client.enumerate(uris.DCIM_SystemView)
+
+        inventory = utils.find_xml(doc, 'DCIM_SystemView',
+                                          uris.DCIM_SystemView,
+                                          find_all=True)
+
+        return [self._parse_system_inventory(item) for item in inventory]
+
+    def _parse_system_inventory(self, item):
+        return System_Inventory(
+            model=self._get_system_inventory_attr(item, 'Model'),
+            power_cap=self._get_system_inventory_attr(item, 'PowerCap'),
+            power_cap_enabled_state=self._get_system_inventory_attr(item, 'PowerCapEnabledState'),
+            service_tag=self._get_system_inventory_attr(item, 'ServiceTag'))
+
+    def _get_system_inventory_attr(self, item, attr_name):
+        return utils.get_wsman_resource_attr(item, uris.DCIM_SystemView,
                                              attr_name)

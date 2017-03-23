@@ -31,6 +31,15 @@ DCIM_BIOSString = ('http://schemas.dell.com/wbem/wscim/1/cim-schema/2/'
 DCIM_BootConfigSetting = ('http://schemas.dell.com/wbem/wscim/1/cim-schema/2/'
                           'DCIM_BootConfigSetting')
 
+DCIM_SoftwareIdentity = ('http://schemas.dell.com/wbem/wscim/1/cim-schema/2/'
+                          'DCIM_SoftwareIdentity')
+
+DCIM_JobService = ('http://schemas.dell.com/wbem/wscim/1/cim-schema/2/'
+                          'DCIM_JobService')
+
+DCIM_SoftwareInstallationService = ('http://schemas.dell.com/wbem/wscim/1/cim-schema/2/'
+                          'DCIM_SoftwareInstallationService')
+
 DCIM_BootSourceSetting = ('http://schemas.dell.com/wbem/wscim/1/cim-schema/2/'
                           'DCIM_BootSourceSetting')
 
@@ -39,6 +48,18 @@ DCIM_ComputerSystem = ('http://schemas.dell.com/wbem/wscim/1/cim-schema/2'
 
 DCIM_ControllerView = ('http://schemas.dell.com/wbem/wscim/1/cim-schema/2/'
                        'DCIM_ControllerView')
+
+DCIM_RAIDEnumeration = ('http://schemas.dell.com/wbem/wscim/1/cim-schema/2/'
+                       'DCIM_RAIDEnumeration')
+
+DCIM_RAIDInteger = ('http://schemas.dell.com/wbem/wscim/1/cim-schema/2/'
+                    'DCIM_RAIDInteger')
+
+DCIM_RAIDService = ('http://schemas.dell.com/wbem/wscim/1/cim-schema/2/'
+                    'DCIM_RAIDService')
+
+DCIM_RAIDString = ('http://schemas.dell.com/wbem/wscim/1/cim-schema/2/'
+                   'DCIM_RAIDString')
 
 DCIM_CPUView = ('http://schemas.dell.com/wbem/wscim/1/cim-schema/2/'
                 'DCIM_CPUView')
@@ -60,6 +81,9 @@ DCIM_LCEnumeration = ('http://schemas.dell.com/wbem/wscim/1/cim-schema/2/'
 
 DCIM_LCService = ('http://schemas.dell.com/wbem/wscim/1/cim-schema/2/'
                   'DCIM_LCService')
+
+DCIM_LCRegisteredProfile = ('http://schemas.dell.com/wbem/wscim/1/cim-schema/2/'
+                  'DCIM_LCRegisteredProfile')
 
 DCIM_LCString = ('http://schemas.dell.com/wbem/wscim/1/cim-schema/2/'
                  'DCIM_LCString')

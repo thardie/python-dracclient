@@ -162,7 +162,7 @@ class DRACClient(object):
         """
         return self._bios_cfg.set_bios_settings(settings)
 
-    def list_idrac_settings(self):
+    def list_idrac_settings(self, forceReget = False):
         """List the iDRAC configuration settings
 
         :returns: a dictionary with the iDRAC settings using InstanceID as the
@@ -174,7 +174,29 @@ class DRACClient(object):
         :raises: DRACOperationFailed on error reported back by the DRAC
                  interface
         """
-        return self._idrac_cfg.list_idrac_settings()
+        return self._idrac_cfg.list_idrac_settings(forceReget)
+
+    def set_idrac_settings(self, settings):
+        """Sets the iDRAC settings
+
+        To be more precise, it sets the pending_value parameter for each of the
+        attributes passed in. For the values to be applied, a config job must
+        be created and the node must be rebooted.
+
+        :param settings: a dictionary containing the proposed values, with
+                         each key being the name of attribute and the value
+                         being the proposed value.
+        :returns: a dictionary containing the commit_needed key with a boolean
+                  value indicating whether a config job must be created for the
+                  values to be applied.
+        :raises: WSManRequestFailure on request failures
+        :raises: WSManInvalidResponse when receiving invalid response
+        :raises: DRACOperationFailed on error reported back by the DRAC
+                 interface
+        :raises: DRACUnexpectedReturnValue on return value mismatch
+        :raises: InvalidParameterValue on invalid RAID attribute
+        """
+        return self._idrac_cfg.set_idrac_settings(settings)
 
     def list_lifecycle_settings(self):
         """List the Lifecycle Controller configuration settings
@@ -188,6 +210,38 @@ class DRACClient(object):
                  interface
         """
         return self._lifecycle_cfg.list_lifecycle_settings()
+
+    def list_firmware_components(self):
+        """List the Lifecycle Controller configuration settings
+
+        :returns: a dictionary with the Lifecycle Controller settings using its
+                  InstanceID as the key. The attributes are either
+                  LCEnumerableAttribute or LCStringAttribute objects.
+        :raises: WSManRequestFailure on request failures
+        :raises: WSManInvalidResponse when receiving invalid response
+        :raises: DRACOperationFailed on error reported back by the DRAC
+                 interface
+        """
+        return self._lifecycle_cfg.list_firmware_components()
+
+    def install_software(self, uri, instance):
+        """List the Lifecycle Controller configuration settings
+
+        :returns: a dictionary with the Lifecycle Controller settings using its
+                  InstanceID as the key. The attributes are either
+                  LCEnumerableAttribute or LCStringAttribute objects.
+        :raises: WSManRequestFailure on request failures
+        :raises: WSManInvalidResponse when receiving invalid response
+        :raises: DRACOperationFailed on error reported back by the DRAC
+                 interface
+        """
+        return self._lifecycle_cfg.install_software(uri, instance)
+
+    def create_reboot_job(self):
+        return self._lifecycle_cfg.create_reboot_job()
+
+    def setup_job_queue(self, job):
+        return self._job_mgmt.setup_job_queue(job)
 
     def list_jobs(self, only_unfinished=False):
         """Returns a list of jobs from the job queue
@@ -336,6 +390,40 @@ class DRACClient(object):
                  interface
         """
         return self._raid_mgmt.list_raid_controllers()
+
+    def list_raid_settings(self, by_name=True):
+        """Returns the list of RAID controllers
+
+        :returns: a list of RAIDController objects
+        :raises: WSManRequestFailure on request failures
+        :raises: WSManInvalidResponse when receiving invalid response
+        :raises: DRACOperationFailed on error reported back by the DRAC
+                 interface
+        """
+        return self._raid_mgmt.list_raid_settings(by_name=by_name)
+
+    def set_raid_settings(self, target, settings):
+        """Sets the RAID configuration
+
+        To be more precise, it sets the pending_value parameter for each of the
+        attributes passed in. For the values to be applied, a config job must
+        be created and the node must be rebooted.
+
+        :param settings: a dictionary containing the proposed values, with
+                         each key being the name of attribute and the value
+                         being the proposed value.
+        :returns: a dictionary containing the commit_needed key with a boolean
+                  value indicating whether a config job must be created for the
+                  values to be applied.
+        :raises: WSManRequestFailure on request failures
+        :raises: WSManInvalidResponse when receiving invalid response
+        :raises: DRACOperationFailed on error reported back by the DRAC
+                 interface
+        :raises: DRACUnexpectedReturnValue on return value mismatch
+        :raises: InvalidParameterValue on invalid RAID attribute
+        """
+        return self._raid_mgmt.set_raid_settings(target, settings)
+
 
     def list_virtual_disks(self):
         """Returns the list of RAID arrays
@@ -496,6 +584,17 @@ class DRACClient(object):
 
         return self._inventory_mgmt.list_nics()
 
+    def list_system_inventory(self):
+        """Returns a system inventory
+
+        :returns: an inventory list
+        :raises: WSManRequestFailure on request failures
+        :raises: WSManInvalidResponse when receiving invalid response
+        :raises: DRACOperationFailed on error reported back by the DRAC
+                 interface
+        """
+
+        return self._inventory_mgmt.list_system_inventory()
 
 class WSManClient(wsman.Client):
     """Wrapper for wsman.Client with return value checking"""

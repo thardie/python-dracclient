@@ -36,7 +36,6 @@ NS_MAP = {'s': NS_SOAP_ENV,
 FILTER_DIALECT_MAP = {'cql': 'http://schemas.dmtf.org/wbem/cql/1/dsp0202.pdf',
                       'wql': 'http://schemas.microsoft.com/wbem/wsman/1/WQL'}
 
-
 class Client(object):
     """Simple client for talking over WSMan protocol."""
 
@@ -48,6 +47,7 @@ class Client(object):
         self.port = port
         self.path = path
         self.protocol = protocol
+        self.session = requests.Session()
         self.endpoint = ('%(protocol)s://%(host)s:%(port)s%(path)s' % {
             'protocol': self.protocol,
             'host': self.host,
@@ -59,7 +59,7 @@ class Client(object):
         LOG.debug('Sending request to %(endpoint)s: %(payload)s',
                   {'endpoint': self.endpoint, 'payload': payload})
         try:
-            resp = requests.post(
+            resp = self.session.post(
                 self.endpoint,
                 auth=requests.auth.HTTPBasicAuth(self.username, self.password),
                 data=payload,
@@ -169,6 +169,22 @@ class Client(object):
         resp_xml = ElementTree.fromstring(resp.content)
 
         return resp_xml
+
+    def create_software_identity(self, name, name_type, instance_id, resource_uri):
+        elem = ElementTree.Element(ElementTree.QName(name_type, name), nsmap={'a':NS_WS_ADDR, 'w':NS_WSMAN})
+        add = ElementTree.SubElement(elem, ElementTree.QName(NS_WS_ADDR, 'Address'))
+        add.text = NS_WS_ADDR_ANONYM_ROLE
+        ref_parm = ElementTree.SubElement(elem, ElementTree.QName(NS_WS_ADDR, "ReferenceParameters"))
+        xresource_uri = ElementTree.SubElement(ref_parm, ElementTree.QName(NS_WSMAN, "ResourceURI"))
+        xresource_uri.text = resource_uri
+        selector_set = ElementTree.SubElement(ref_parm, ElementTree.QName(NS_WSMAN, 'SelectorSet'))
+        selector = ElementTree.SubElement(selector_set, ElementTree.QName(NS_WSMAN, 'Selector'))
+        selector.attrib['Name'] = 'InstanceID'
+        selector.text = instance_id
+
+        return elem
+
+
 
     def _enum_context(self, resp):
         context_elem = resp.find('.//{%s}EnumerationContext' % NS_WSMAN_ENUM)
@@ -368,6 +384,10 @@ class _InvokePayload(_Payload):
                  'method': self.method}))
 
         for (name, value) in self.properties.items():
+            if isinstance(value, ElementTree._Element):
+                method_elem.append(value)
+                continue
+
             if not isinstance(value, list):
                 value = [value]
 

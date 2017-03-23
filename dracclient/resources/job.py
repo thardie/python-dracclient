@@ -157,6 +157,22 @@ class JobManagement(object):
         job_id = doc.find(query).text
         return job_id
 
+    def setup_job_queue(self, job):
+
+        selectors = {'SystemCreationClassName': 'DCIM_ComputerSystem',
+                     'SystemName': 'Idrac',
+                     'CreationClassName': 'DCIM_JobService',
+                     'Name': 'JobService'}
+
+        properties = {'JobArray': [job],
+                      'StartTimeInterval': 'TIME_NOW'}
+
+        doc = self.client.invoke(uris.DCIM_JobService, 'SetupJobQueue',
+                                 selectors, properties,
+                                 expected_return_value=utils.RET_SUCCESS)
+
+        return True
+
     def delete_pending_config(
             self, resource_uri, cim_creation_class_name, cim_name, target,
             cim_system_creation_class_name='DCIM_ComputerSystem',
